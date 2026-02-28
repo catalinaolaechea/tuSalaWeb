@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from geopy.geocoders import Nominatim
 
 class Sala(models.Model):
 
@@ -29,6 +30,9 @@ class Sala(models.Model):
 
     # DATOS QUE EL ADMIN PUEDE COMPLETAR
     barrio = models.CharField(max_length=100, null=True, blank=True)
+
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
 
     instagram = models.CharField(max_length=100, null=True, blank=True)
     telefono_whatsapp = models.CharField(max_length=20, null=True, blank=True)
@@ -62,6 +66,20 @@ class Sala(models.Model):
 
     activa = models.BooleanField(default=True) #si el admin quiere desactivar temporalmente una sala aprobada
     creada_en = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.direccion and (self.latitud is None or self.longitud is None):
+            geolocator = Nominatim(user_agent="tusalaweb")
+
+            try:
+                location = geolocator.geocode(f"{self.direccion}, Buenos Aires, Argentina")
+
+                if location:
+                    self.latitud = location.latitude
+                    self.longitud = location.longitude
+            except:
+                pass
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre

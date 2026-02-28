@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .models import Sala
 from .serializers import SalaSerializer
 from rest_framework.pagination import PageNumberPagination
+from .utils import obtener_coordenadas_barrio
 
 ## en la pagina los usuarios solo pueden ver las salas aprobadas por el administrador
 @api_view(['GET', 'POST'])
@@ -61,3 +62,21 @@ def detalle_sala(request, id):
     serializer = SalaSerializer(sala)
     return Response(serializer.data)
 
+def salas_por_barrio(request):
+
+    barrio = request.GET.get("barrio")
+
+    salas = Sala.objects.filter(
+        barrio__iexact=barrio,
+        estado="aprobada",
+        activa=True
+    )
+
+    serializer = SalaSerializer(salas, many=True)
+
+    centro = obtener_coordenadas_barrio(barrio)
+
+    return Response({
+        "centro": centro,
+        "salas": serializer.data
+    })
