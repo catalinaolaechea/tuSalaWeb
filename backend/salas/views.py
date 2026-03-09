@@ -4,6 +4,11 @@ from .models import Sala
 from .serializers import SalaSerializer
 from rest_framework.pagination import PageNumberPagination
 from .utils import obtener_coordenadas_barrio
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+
+def home(request):
+    return HttpResponse("API de TuSala funcionando")
 
 ## en la pagina los usuarios solo pueden ver las salas aprobadas por el administrador
 @api_view(['GET', 'POST'])
@@ -62,6 +67,9 @@ def detalle_sala(request, id):
     serializer = SalaSerializer(sala)
     return Response(serializer.data)
 
+## GET http://localhost:8000/salas-por-barrio/?barrio=barrio
+## barrio= Palermo || barrio = Monserrat || etc
+@api_view(['GET'])
 def salas_por_barrio(request):
 
     barrio = request.GET.get("barrio")

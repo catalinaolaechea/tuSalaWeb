@@ -35,7 +35,7 @@ export default function Home() {
           w="100%"
           onClick={() => navigate("/cargar-sala")}
         >
-          Quiero cargar mi sala
+          Cargar nueva sala
         </Button>
 
       </VStack>

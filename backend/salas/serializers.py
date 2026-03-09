@@ -4,6 +4,8 @@ from .models import Sala
 # Convertí el modelo Sala a JSON con todos sus campos
 
 class SalaSerializer(serializers.ModelSerializer):
+    estado = serializers.CharField(read_only=True)
+
     class Meta:
         model = Sala
         fields = '__all__'

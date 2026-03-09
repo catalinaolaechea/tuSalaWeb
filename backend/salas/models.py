@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from geopy.geocoders import Nominatim
+from .utils import obtener_datos_direccion
 
 class Sala(models.Model):
 
@@ -30,7 +30,6 @@ class Sala(models.Model):
 
     # DATOS QUE EL ADMIN PUEDE COMPLETAR
     barrio = models.CharField(max_length=100, null=True, blank=True)
-
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
 
@@ -50,7 +49,7 @@ class Sala(models.Model):
     )
 
     estado = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=ESTADO_OPCIONES,
         default="pendiente",
         
@@ -67,18 +66,17 @@ class Sala(models.Model):
     activa = models.BooleanField(default=True) #si el admin quiere desactivar temporalmente una sala aprobada
     creada_en = models.DateTimeField(auto_now_add=True)
 
+    ## obtiene barrio, longitud latitud x ubicación
     def save(self, *args, **kwargs):
+
         if self.direccion and (self.latitud is None or self.longitud is None):
-            geolocator = Nominatim(user_agent="tusalaweb")
 
-            try:
-                location = geolocator.geocode(f"{self.direccion}, Buenos Aires, Argentina")
+            datos = obtener_datos_direccion(self.direccion)
 
-                if location:
-                    self.latitud = location.latitude
-                    self.longitud = location.longitude
-            except:
-                pass
+            if datos:
+                self.latitud = datos["lat"]
+                self.longitud = datos["lng"]
+                self.barrio = datos["barrio"]
         super().save(*args, **kwargs)
 
     def __str__(self):
