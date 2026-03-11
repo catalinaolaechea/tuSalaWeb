@@ -1,44 +1,145 @@
-import { Box, Heading, Input, Button, VStack , Text } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { Box, VStack, Text } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
 
-export default function Home() {
-  const navigate = useNavigate();
-  const [barrio, setBarrio] = useState(""); // 👈 estado
+type Mensaje = {
+  texto: string
+  autor: string
+  tipo: "yo" | "otro"
+  color?: string
+}
 
-  const buscar = () => {
-    navigate(`/salas?barrio=${barrio}`);
-  };
+const mensajes: Mensaje[] = [
+  {
+    texto: "Chicxs hay que buscar sala para el viernes",
+    autor: "Vos",
+    tipo: "yo"
+  },
+  {
+    texto: "sisi, busquemos por villa crespo que es nuestro punto medio",
+    autor: "Juli guitarra",
+    tipo: "otro",
+    color: "purple.400"
+  },
+  {
+    texto: "dale, yo puedo despues de las 16",
+    autor: "Lau bata",
+    tipo: "otro",
+    color: "green.400"
+  },
+  {
+    texto: "conocen alguna sala por la zona?",
+    autor: "Juli guitarra",
+    tipo: "otro",
+    color: "purple.400"
+  },
+  {
+    texto: "creo que conozco una pero sin referencias",
+    autor: "Juan Bass",
+    tipo: "otro",
+    color: "orange.400"
+  },
+  {
+    texto: "busquemos en tuSalaWEB, ahí hay referencias y salas por zona!",
+    autor: "Lau bata",
+    tipo: "otro",
+    color: "green.400"
+  }
+]
+
+function Bubble({ m }: { m: Mensaje }) {
+      const esYo = m.tipo === "yo"
+
+    return (
+      <Box
+        alignSelf={esYo ? "flex-end" : "flex-start"}
+        position="relative"
+        bg={esYo ? "blue.500" : "gray.200"}
+        color={esYo ? "white" : "black"}
+        px={4}
+        py={2}
+        borderRadius="20px"
+        maxW="75%"
+        boxShadow="md"
+        _after={{
+          content: '""',
+          position: "absolute",
+          bottom: "0",
+          [esYo ? "right" : "left"]: "-8px",
+          width: "0",
+          height: "0",
+          borderTop: "8px solid transparent",
+          borderBottom: "8px solid transparent",
+          ...(esYo
+            ? { borderLeft: "10px solid", borderLeftColor: "blue.500" }
+            : { borderRight: "10px solid", borderRightColor: "gray.200" })
+        }}
+      >
+
+        {!esYo && (
+          <Text
+            fontSize="xs"
+            fontWeight="bold"
+            color={m.color}
+            mb={1}
+          >
+            {m.autor}
+          </Text>
+        )}
+
+        <Text fontSize="sm">{m.texto}</Text>
+
+      </Box>
+    )
+}
+
+export default function ChatAnimado() {
+
+  const [mensajeActual, setMensajeActual] = useState(0)
+  const [textoMostrado, setTextoMostrado] = useState("")
+  const [indiceLetra, setIndiceLetra] = useState(0)
+
+  const mensaje = mensajes[mensajeActual]
+
+  useEffect(() => {
+
+    if (!mensaje) return
+
+    if (indiceLetra < mensaje.texto.length) {
+
+      const timer = setTimeout(() => {
+        setTextoMostrado((prev) => prev + mensaje.texto[indiceLetra])
+        setIndiceLetra((i) => i + 1)
+      }, 30)
+
+      return () => clearTimeout(timer)
+    }
+
+    const siguiente = setTimeout(() => {
+      setMensajeActual((m) => m + 1)
+      setTextoMostrado("")
+      setIndiceLetra(0)
+    }, 1100)
+
+    return () => clearTimeout(siguiente)
+
+  }, [indiceLetra, mensajeActual, mensaje])
 
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
-      <VStack gap={6} maxW="500px" w="100%" px={4}>
-        
-        <Heading textAlign="center" size="2xl">
-          Tu sala de ensayo
-        </Heading>
+    <VStack align="stretch" gap={3} maxW="420px" mx="auto" mt={10}>
 
-        <Input
-          placeholder="Buscar por barrio (ej: Palermo)"
-          size="lg"
-          value={barrio}
-          onChange={(e) => setBarrio(e.target.value)} 
+      {mensajes.slice(0, mensajeActual).map((m, i) => (
+        <Bubble key={i} m={m} />
+      ))}
+
+      {mensaje && (
+        <Bubble
+          m={{
+            ...mensaje,
+            texto: textoMostrado + "|"
+          }}
         />
+      )}
 
-        <Button onClick={buscar}>Buscar</Button>
-
-        <Text fontWeight="bold">ó</Text>
-
-        <Button
-          colorPalette="blue"
-          size="lg"
-          w="100%"
-          onClick={() => navigate("/cargar-sala")}
-        >
-          Cargar nueva sala
-        </Button>
-
-      </VStack>
-    </Box>
+    </VStack>
   )
 }

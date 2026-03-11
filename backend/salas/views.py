@@ -1,11 +1,18 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Sala
+from django.db.models import Avg
 from .serializers import SalaSerializer
 from rest_framework.pagination import PageNumberPagination
 from .utils import obtener_coordenadas_barrio
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+import random
+
+CENTRO_CABA = {
+    "lat": -34.6037,
+    "lng": -58.3816
+}
 
 def home(request):
     return HttpResponse("API de TuSala funcionando")
@@ -74,15 +81,43 @@ def salas_por_barrio(request):
 
     barrio = request.GET.get("barrio")
 
-    salas = Sala.objects.filter(
-        barrio__iexact=barrio,
-        estado="aprobada",
-        activa=True
-    )
+    # si el usuario completa un barrio
+    if barrio:
+        barrio = barrio.strip()
+
+        salas = Sala.objects.filter(
+            barrio__iexact=barrio,
+            estado="aprobada",
+            activa=True
+        )
+
+        # si existen salas en ese barrio -> centro promedio
+        if salas.exists():
+            centro = salas.aggregate(
+                lat=Avg("latitud"),
+                lng=Avg("longitud")
+            )
+
+        # si no existen salas -> centro del barrio
+        else:
+            coords = obtener_coordenadas_barrio(barrio)
+
+            if coords:
+                centro = coords
+            else:
+                centro = CENTRO_CABA
+
+    # si el usuario no puso barrio
+    else:
+
+        salas = Sala.objects.filter(
+            estado="aprobada",
+            activa=True
+        ).order_by("?")[:10]
+
+        centro = CENTRO_CABA
 
     serializer = SalaSerializer(salas, many=True)
-
-    centro = obtener_coordenadas_barrio(barrio)
 
     return Response({
         "centro": centro,
