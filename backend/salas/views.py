@@ -1,12 +1,15 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Sala
-from django.db.models import Avg
-from .serializers import SalaSerializer
 from rest_framework.pagination import PageNumberPagination
-from .utils import obtener_coordenadas_barrio
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
+from django.db.models import Q
+from .serializers import SalaSerializer
+from .utils import obtener_coordenadas_barrio
+from .models import Sala
+
+
 import random
 
 CENTRO_CABA = {
@@ -123,3 +126,20 @@ def salas_por_barrio(request):
         "centro": centro,
         "salas": serializer.data
     })
+
+@api_view(['GET'])
+def sugerencias_barrios(request):
+
+    q = request.GET.get("q", "").strip()
+
+    if not q:
+        return Response([])
+
+    barrios = (
+        Sala.objects
+        .filter(barrio__icontains=q)
+        .values_list("barrio", flat=True)
+        .distinct()
+    )
+
+    return Response(list(barrios)[:5])
