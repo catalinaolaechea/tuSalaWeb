@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap  } from "react-leaflet";
 //import type { LatLngExpression } from "leaflet";
-import { Box } from "@chakra-ui/react";
+import { Box , Heading , Text, VStack} from "@chakra-ui/react";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ type Sala = {
   id: number;
   nombre: string;
   direccion: string;
+  barrio: string | null
   precio: number;
   latitud: number;
   longitud: number;
@@ -85,44 +86,81 @@ function SalasPorBarrio() {
   );
 
   return (
-    <div>
-      <h1>
-        {barrio ? `Salas en ${formatearBarrio(barrio)}`: "Salas de ensayo en CABA"}
-      </h1>
-      <Box maxW="900px" mx="auto" mt={10} px={4}>
-        {centro && (
-        <MapContainer
-          center={centro}
-          zoom={12}
-          style={{ height: "400px" }}
+    <Box maxW="1100px" mx="auto" mt={10} px={6}>
+
+      <Heading mb={6}>
+        {barrio 
+          ? `Salas en ${formatearBarrio(barrio)}` 
+          : "Salas de ensayo en CABA"}
+      </Heading>
+
+      {/* MAPA */}
+      {centro && (
+        <Box
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="md"
+          mb={8}
         >
+          <MapContainer
+            center={centro}
+            zoom={12}
+            style={{ height: "420px", width: "100%" }}
+          >
 
-          <ControlMapa centro={centro} barrio={barrio} />
+            <ControlMapa centro={centro} barrio={barrio} />
 
-          <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+            <TileLayer
+              attribution="&copy; OpenStreetMap contributors"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
-          {salasConCoords.map((sala) => (
+            {salasConCoords.map((sala) => (
               <Marker key={sala.id} position={[sala.latitud, sala.longitud]}>
                 <Popup>
                   <strong>{sala.nombre}</strong>
                   <p>{sala.direccion}</p>
                 </Popup>
               </Marker>
-          ))}
+            ))}
+          </MapContainer>
+        </Box>
+      )}
 
-        </MapContainer>
+        {/* LISTADO DE SALAS */}
+      <VStack gap={4} align="stretch">
+
+        {salas.length === 0 && (
+          <Box
+            p={6}
+            bg="gray.50"
+            borderRadius="md"
+            textAlign="center"
+          >
+            No se encontraron salas en este barrio.
+          </Box>
         )}
-          {salas.map((sala) => (
-            <div key={sala.id}>
-              <p>{sala.nombre}</p>
-              <p>{sala.direccion}</p>
-            </div>
-          ))}
-      </Box>
-    </div>
+
+        {salas.map((sala) => (
+          <Box
+            key={sala.id}
+            p={5}
+            bg="white"
+            borderRadius="md"
+            boxShadow="sm"
+            _hover={{ boxShadow: "md" }}
+          >
+            <Heading size="md">{sala.nombre}</Heading>
+
+            <Text color="gray.600">
+              {sala.direccion}, {sala.barrio}
+            </Text>
+          </Box>
+        ))}
+
+      </VStack>
+
+    </Box>
   );
 }
 

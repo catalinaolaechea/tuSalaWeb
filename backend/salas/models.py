@@ -66,17 +66,38 @@ class Sala(models.Model):
     activa = models.BooleanField(default=True) #si el admin quiere desactivar temporalmente una sala aprobada
     creada_en = models.DateTimeField(auto_now_add=True)
 
-    ## obtiene barrio, longitud latitud x ubicación
     def save(self, *args, **kwargs):
 
+        direccion_para_buscar = self.direccion
+
+        # 1️⃣ Separar barrio si el usuario lo puso en la dirección
+        if self.direccion and "," in self.direccion:
+            partes = [p.strip() for p in self.direccion.split(",")]
+
+            if len(partes) >= 2:
+                self.direccion = partes[0]
+                posible_barrio = partes[1]
+
+                if not self.barrio:
+                    self.barrio = posible_barrio
+
+        # reconstruimos la dirección para el geocoder
+        if self.barrio:
+            direccion_para_buscar = f"{self.direccion}, {self.barrio}"
+
+        # 2️⃣ Obtener coordenadas
         if self.direccion and (self.latitud is None or self.longitud is None):
 
-            datos = obtener_datos_direccion(self.direccion)
+            datos = obtener_datos_direccion(direccion_para_buscar)
 
             if datos:
                 self.latitud = datos["lat"]
                 self.longitud = datos["lng"]
-                self.barrio = datos["barrio"]
+
+                # solo completar barrio si todavía no existe
+                if not self.barrio and datos["barrio"]:
+                    self.barrio = datos["barrio"]
+
         super().save(*args, **kwargs)
 
     def __str__(self):
