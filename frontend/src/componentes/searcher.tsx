@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
-import axios from "axios"
+import { getBarrios } from "../services/salas"
 
 export default function Buscador() {
 
@@ -26,15 +26,17 @@ export default function Buscador() {
   }
 
   useEffect(() => {
-
     const barrioLimpio = barrio.trim()
 
     if (!barrioLimpio) return
 
-    axios
-      .get(`http://localhost:8000/barrios/?q=${barrioLimpio}`)
-      .then(res => setSugerencias(res.data))
-      .catch(err => console.error(err))
+    const timeout = setTimeout(() => {
+      getBarrios(barrioLimpio)
+        .then(setSugerencias)
+        .catch(console.error)
+    }, 300)
+
+    return () => clearTimeout(timeout)
 
   }, [barrio])
 

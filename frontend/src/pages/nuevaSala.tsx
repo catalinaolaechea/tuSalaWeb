@@ -8,7 +8,7 @@ import {
   Field,
 } from "@chakra-ui/react"
 import { useState } from "react"
-import axios from "axios"
+import { crearSala } from "../services/salas"
 
 export default function CargarSala() {
   const [nombre, setNombre] = useState("")
@@ -33,14 +33,13 @@ export default function CargarSala() {
         telefono_whatsapp = contacto
       }
 
-
-      await axios.post("http://127.0.0.1:8000/api/salas/", {
-        nombre: nombre,
+      await crearSala({
+        nombre,
         direccion: ubicacion,
-        telefono_whatsapp: telefono_whatsapp,
-        instagram: instagram,
-        precio: precio,
-        calificacion: calificacion,
+        telefono_whatsapp,
+        instagram,
+        precio,
+        calificacion,
       })
 
       setEnviado(true)
