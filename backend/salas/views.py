@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from django.db.models import Q
 from .serializers import SalaSerializer
-from .utils import obtener_coordenadas_barrio
+from .utils import (obtener_coordenadas_barrio, obtener_coordenadas_barrios, calcular_centro)
 from .models import Sala
 
 
@@ -143,3 +143,22 @@ def sugerencias_barrios(request):
     )
 
     return Response(list(barrios)[:5])
+
+@api_view(['POST'])
+def punto_medio(request):
+
+    barrios = request.data.get("barrios", [])
+
+    if not barrios:
+        return Response({"error": "Debe enviar al menos un barrio"}, status=400)
+
+    coordenadas = obtener_coordenadas_barrios(barrios)
+
+    if not coordenadas:
+        return Response({"error": "No se pudieron obtener coordenadas"}, status=400)
+
+    centro = calcular_centro(coordenadas)
+
+    return Response({
+        "centro": centro
+    })

@@ -1,21 +1,30 @@
-import axios from "axios"
-import type {CrearSala, RespuestaAPI} from "../types/sala"
+import { api } from "./api"
+import type { CrearSala, RespuestaAPI, PuntoMedioResponse } from "../types/sala"
 
 export function getSalas(barrio?: string | null) {
-  const url = barrio
-    ? `http://localhost:8000/salas/?barrio=${encodeURIComponent(barrio.trim())}`
-    : "http://localhost:8000/salas/"
-
-  return axios.get<RespuestaAPI>(url)
+  return api.get<RespuestaAPI>("/salas/", {
+    params: barrio ? { barrio: barrio.trim() } : {},
+  })
 }
 
 export function crearSala(data: CrearSala) {
-  return axios.post("http://127.0.0.1:8000/api/salas/", data)
+  return api.post("/api/salas/", data)
 }
 
-export const getBarrios = async (query: string): Promise<string[]> => {
-  const res = await axios.get(
-    `http://localhost:8000/barrios/?q=${query}`
-  )
+export async function getBarrios(query: string): Promise<string[]> {
+  if (!query.trim()) return []
+
+  const res = await api.get<string[]>("/barrios/", {
+    params: { q: query }
+  })
+
+  return res.data
+}
+
+export async function getPuntoMedio(barrios: string[]): Promise<PuntoMedioResponse> {
+  const res = await api.post<PuntoMedioResponse>("/punto-medio/", {
+    barrios
+  })
+
   return res.data
 }

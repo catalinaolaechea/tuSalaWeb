@@ -9,8 +9,13 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { crearSala } from "../services/salas"
+import { Stars } from "../utils/starsRender"
+import { useTitle } from "../hooks/useTitle"
 
 export default function CargarSala() {
+
+  useTitle("TuSala | Publicar Sala")
+
   const [nombre, setNombre] = useState("")
   const [ubicacion, setUbicacion] = useState("")
   const [contacto, setContacto] = useState("")
@@ -61,7 +66,14 @@ const resetForm = () => {
 
 if (enviado) {
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" px={4}>
+    <Box 
+      minH="100vh" 
+      display="flex" 
+      alignItems="flex-start" 
+      justifyContent="center" 
+      pt={10} 
+      px={4}
+    >
       <Box
         bg="white"
         p={10}
@@ -89,7 +101,14 @@ if (enviado) {
 
 
   return(
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" px={4}>
+    <Box 
+      minH="100vh" 
+      display="flex" 
+      alignItems="flex-start" 
+      justifyContent="center" 
+      pt={120} 
+      px={4}
+    >
       <VStack gap={6} maxW="500px" w="100%">
 
         <Heading size="xl" textAlign="center">
@@ -141,17 +160,14 @@ if (enviado) {
 
         <Field.Root>
           <Field.Label>Calificación</Field.Label>
-          <select
-            value={calificacion ?? ""}
-            onChange={(e) => setCalificacion(Number(e.target.value))}
-          >
-            <option value="">Seleccionar</option>
-            <option value="1">1 - Muy malo</option>
-            <option value="2">2 - Malo</option>
-            <option value="3">3 - Regular</option>
-            <option value="4">4 - Bueno</option>
-            <option value="5">5 - Excelente</option>
-          </select>
+
+          <HStack>
+            <Stars
+              calificacion={calificacion ?? 0}
+              onChange={(value) => setCalificacion(value)}
+            />
+          </HStack>
+
         </Field.Root>
 
         <Button 

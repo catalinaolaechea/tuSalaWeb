@@ -1,6 +1,22 @@
 
 from geopy.geocoders import Nominatim
 
+def separar_direccion_de_barrio(direccion):
+    if not direccion or "," not in direccion:
+        return direccion, None
+
+    partes = [p.strip() for p in direccion.split(",")]
+
+    if len(partes) >= 2:
+        return partes[0], partes[1]
+
+    return direccion, None
+
+def construir_direccion(direccion, barrio):
+    if barrio:
+        return f"{direccion}, {barrio}"
+    return direccion
+
 def obtener_coordenadas_barrio(barrio):
     geolocator = Nominatim(user_agent="tuSalaWeb")
 
@@ -42,3 +58,27 @@ def obtener_datos_direccion(direccion):
         pass
 
     return None
+
+def obtener_coordenadas_barrios(barrios):
+    coordenadas = []
+
+    for barrio in barrios:
+        coords = obtener_coordenadas_barrio(barrio.strip())
+
+        if coords:
+            coordenadas.append(coords)
+
+    return coordenadas
+
+
+def calcular_centro(coordenadas):
+    if not coordenadas:
+        return None
+
+    lat_prom = sum(c["lat"] for c in coordenadas) / len(coordenadas)
+    lng_prom = sum(c["lng"] for c in coordenadas) / len(coordenadas)
+
+    return {
+        "lat": lat_prom,
+        "lng": lng_prom
+    }

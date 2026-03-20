@@ -9,3 +9,4 @@ class SalaAdmin(admin.ModelAdmin):
             raise ValueError("Debes completar el barrio antes de aprobar la sala")
 
         super().save_model(request, obj, form, change)
+

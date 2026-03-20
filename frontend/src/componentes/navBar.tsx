@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-
+import { MapPin , Search , Plus } from "lucide-react"
 export default function Navbar() {
   const navigate = useNavigate()
 
@@ -29,20 +29,40 @@ export default function Navbar() {
           🎵 TuSala
         </Heading>
 
-        <HStack gap={3}>
+        <HStack gap={2}>
+
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/buscar-punto-medio")}
+          >
+            <HStack gap={2}>
+              <MapPin size={18} />
+              <span>Punto medio</span>
+            </HStack>
+          </Button>
+
           <Button
             variant="ghost"
             onClick={() => navigate("/salas")}
           >
-            Explorar salas
+            <HStack gap={2}>
+              <Search size={18} />
+              <span>Explorar</span>
+            </HStack>
           </Button>
 
           <Button
-            colorScheme="blue"
+            colorPalette="blue"
             onClick={() => navigate("/cargar-sala")}
+            borderRadius="full"
+            px={5}
           >
-            Publicar sala
+            <HStack gap={2}>
+              <Plus size={18} />
+              <span>Publicar</span>
+            </HStack>
           </Button>
+
         </HStack>
       </Flex>
     </Box>

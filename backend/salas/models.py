@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .utils import obtener_datos_direccion
+from .utils import (obtener_datos_direccion , construir_direccion ,separar_direccion_de_barrio)
 
 class Sala(models.Model):
 
@@ -68,33 +68,23 @@ class Sala(models.Model):
 
     def save(self, *args, **kwargs):
 
-        direccion_para_buscar = self.direccion
+        direccion_sin_barrio, barrio = separar_direccion_de_barrio(self.direccion)
 
-        # 1️⃣ Separar barrio si el usuario lo puso en la dirección
-        if self.direccion and "," in self.direccion:
-            partes = [p.strip() for p in self.direccion.split(",")]
+        self.direccion = direccion_sin_barrio
 
-            if len(partes) >= 2:
-                self.direccion = partes[0]
-                posible_barrio = partes[1]
+        if barrio and not self.barrio:
+            self.barrio = barrio
 
-                if not self.barrio:
-                    self.barrio = posible_barrio
+        direccion_para_geocoder = construir_direccion(self.direccion, self.barrio)
 
-        # reconstruimos la dirección para el geocoder
-        if self.barrio:
-            direccion_para_buscar = f"{self.direccion}, {self.barrio}"
-
-        # 2️⃣ Obtener coordenadas
         if self.direccion and (self.latitud is None or self.longitud is None):
 
-            datos = obtener_datos_direccion(direccion_para_buscar)
+            datos = obtener_datos_direccion(direccion_para_geocoder)
 
             if datos:
                 self.latitud = datos["lat"]
                 self.longitud = datos["lng"]
 
-                # solo completar barrio si todavía no existe
                 if not self.barrio and datos["barrio"]:
                     self.barrio = datos["barrio"]
 

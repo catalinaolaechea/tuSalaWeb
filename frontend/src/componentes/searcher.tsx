@@ -29,7 +29,7 @@ export default function Buscador() {
     const barrioLimpio = barrio.trim()
 
     if (!barrioLimpio) return
-
+    //debounce!!
     const timeout = setTimeout(() => {
       getBarrios(barrioLimpio)
         .then(setSugerencias)

@@ -7,12 +7,9 @@ export type CrearSala = {
   calificacion: number | null
 }
 
-export type RespuestaAPI = {
-  centro: {
-    lat: number
-    lng: number
-  } | null
-  salas: Sala[]
+export type Coordenadas = {
+  lat: number
+  lng: number
 }
 
 export type Sala = {
@@ -31,6 +28,12 @@ export type Sala = {
   longitud: number | null
 }
 
+export type RespuestaAPI = {
+  centro: Coordenadas | null
+  salas: Sala[]
+}
+
+
 export type Props = {
   open: boolean
   onClose: () => void
@@ -42,4 +45,13 @@ export type Mensaje = {
   autor: string
   tipo: "yo" | "otro"
   color?: string
+}
+
+export type StarsProps = {
+  calificacion: number
+  onChange?: (value: number) => void
+}
+
+export type PuntoMedioResponse = {
+  centro: Coordenadas
 }
