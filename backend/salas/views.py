@@ -4,21 +4,14 @@ from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from django.db.models import Q
 from .serializers import SalaSerializer
-from .utils import (obtener_coordenadas_barrio, obtener_coordenadas_barrios, calcular_centro)
+from .utils import (obtener_coordenadas_barrio, obtener_coordenadas_barrios, calcular_centro , obtener_barrio_desde_coordenadas)
 from .models import Sala
-
-
-import random
 
 CENTRO_CABA = {
     "lat": -34.6037,
     "lng": -58.3816
 }
-
-def home(request):
-    return HttpResponse("API de TuSala funcionando")
 
 ## en la pagina los usuarios solo pueden ver las salas aprobadas por el administrador
 @api_view(['GET', 'POST'])
@@ -33,6 +26,7 @@ def lista_salas(request):
         precio = request.GET.get('precio')
         calificacion = request.GET.get('calificacion')
 
+        ## filtros
         if barrio:
             salas = salas.filter(barrio__iexact=barrio)
 
@@ -142,7 +136,7 @@ def sugerencias_barrios(request):
         .distinct()
     )
 
-    return Response(list(barrios)[:5])
+    return Response(list(barrios))
 
 @api_view(['POST'])
 def punto_medio(request):
@@ -159,6 +153,14 @@ def punto_medio(request):
 
     centro = calcular_centro(coordenadas)
 
+    barrio = None
+    if centro:
+        barrio = obtener_barrio_desde_coordenadas(
+            centro["lat"],
+            centro["lng"]
+        )
+
     return Response({
-        "centro": centro
+        "centro": centro,
+        "barrio": barrio
     })

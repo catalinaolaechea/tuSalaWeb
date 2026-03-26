@@ -20,6 +20,7 @@ export default function PuntoMedio(){
     const [ubicaciones, setUbicaciones] = useState<string[]>([""])
     const [centro, setCentro] = useState<Coordenadas | null>(null)
     const [loading, setLoading] = useState(false)
+    const [barrio, setBarrio] = useState<string | null>(null)
 
     // ➕ agregar input
     function agregarInput() {
@@ -51,7 +52,11 @@ export default function PuntoMedio(){
 
         try {
             const data = await getPuntoMedio(barriosFiltrados)
+
+            console.log("RESPUESTA BACKEND:", data) // 👈 ACÁ
+
             setCentro(data.centro)
+            setBarrio(data.barrio)
         } catch (error) {
             console.error("Error calculando punto medio", error)
         } finally {
@@ -124,11 +129,11 @@ export default function PuntoMedio(){
         </Box>
 
         {/* INFO */}
-        {centro && (
+        {barrio && (
             <Box mt={4}>
-            <Text>
-                Centro: {centro.lat.toFixed(4)}, {centro.lng.toFixed(4)}
-            </Text>
+                <Text fontWeight="medium">
+                📍 Barrio sugerido: {barrio}
+                </Text>
             </Box>
         )}
 

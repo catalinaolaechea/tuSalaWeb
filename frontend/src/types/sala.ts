@@ -54,4 +54,5 @@ export type StarsProps = {
 
 export type PuntoMedioResponse = {
   centro: Coordenadas
+  barrio: string | null
 }

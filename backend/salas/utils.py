@@ -17,6 +17,7 @@ def construir_direccion(direccion, barrio):
         return f"{direccion}, {barrio}"
     return direccion
 
+## de un barrio
 def obtener_coordenadas_barrio(barrio):
     geolocator = Nominatim(user_agent="tuSalaWeb")
 
@@ -30,6 +31,7 @@ def obtener_coordenadas_barrio(barrio):
     
     return None
 
+## de una dirección
 def obtener_datos_direccion(direccion):
     geolocator = Nominatim(user_agent="tuSalaWeb")
 
@@ -59,6 +61,7 @@ def obtener_datos_direccion(direccion):
 
     return None
 
+## lista de barrios en lista de coordenadas
 def obtener_coordenadas_barrios(barrios):
     coordenadas = []
 
@@ -82,3 +85,31 @@ def calcular_centro(coordenadas):
         "lat": lat_prom,
         "lng": lng_prom
     }
+
+def obtener_barrio_desde_coordenadas(lat, lng):
+    geolocator = Nominatim(user_agent="tuSalaWeb")
+
+    try:
+        location = geolocator.reverse(
+            f"{lat}, {lng}",
+            addressdetails=True
+        )
+
+        if not location:
+            return None
+
+        address = location.raw.get("address", {})
+
+        barrio = (
+            address.get("suburb")
+            or address.get("neighbourhood")
+            or address.get("city_district")
+            or address.get("town")
+            or address.get("village")
+        )
+
+        return barrio
+
+    except Exception as e:
+        print("Error obteniendo barrio:", e)
+        return None
