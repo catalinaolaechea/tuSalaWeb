@@ -13,10 +13,12 @@ import { useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import type { Coordenadas } from "../types/sala"
 import { getPuntoMedio } from "../services/salas"
+import { useNavigate } from "react-router-dom"
 
 import "leaflet/dist/leaflet.css"
 
 export default function PuntoMedio(){
+    const navigate = useNavigate()
     const [ubicaciones, setUbicaciones] = useState<string[]>([""])
     const [centro, setCentro] = useState<Coordenadas | null>(null)
     const [loading, setLoading] = useState(false)
@@ -53,10 +55,14 @@ export default function PuntoMedio(){
         try {
             const data = await getPuntoMedio(barriosFiltrados)
 
-            console.log("RESPUESTA BACKEND:", data) // 👈 ACÁ
-
             setCentro(data.centro)
             setBarrio(data.barrio)
+
+            // 👉 REDIRECCIÓN DIRECTA AL BUSCADOR
+            if (data.barrio) {
+            navigate(`/buscar-sala?barrio=${encodeURIComponent(data.barrio)}`)
+            }
+
         } catch (error) {
             console.error("Error calculando punto medio", error)
         } finally {

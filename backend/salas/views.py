@@ -17,10 +17,7 @@ CENTRO_CABA = {
 @api_view(['GET', 'POST'])
 def lista_salas(request):
     if request.method == 'GET':
-        salas = Sala.objects.filter(
-            estado="aprobada",
-            activa=True
-        )
+        salas = Sala.objects.filter(activa=True)
 
         barrio = request.GET.get('barrio')
         precio = request.GET.get('precio')

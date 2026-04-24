@@ -21,13 +21,19 @@ export default function Navbar() {
         align="center"
         justify="space-between"
       >
-        <Heading
-          size="md"
-          cursor="pointer"
-          onClick={() => navigate("/")}
-        >
-          🎵 TuSala
-        </Heading>
+      <Heading
+        size="md"
+        cursor="pointer"
+        onClick={() => navigate("/")}
+        display="flex"
+        alignItems="center"
+        fontWeight="bold"
+      >
+        tuSala
+        <Box as="span" color="blue.500" ml="1">
+          WEB
+        </Box>
+      </Heading>
 
         <HStack gap={2}>
 
