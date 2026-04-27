@@ -1,4 +1,4 @@
-# 🩺 TuSalaWeb
+# TuSalaWeb
 
 Aplicación web para la gestión de una sala médica: administración, profesionales, turnos y panel de gestión.
 
