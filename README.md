@@ -1,5 +1,5 @@
 
-# tuSalaWEB
+# 🎵 tuSalaWEB: música y tecnología
 ## Sobre el Proyecto:
 
 **TuSalaWeb** es una plataforma web pensada para ayudar a músicos a descubrir, compartir y difundir salas de ensayo.
