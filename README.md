@@ -104,5 +104,4 @@ El proyecto continuará evolucionando incorporando nuevas funcionalidades:
 - Preparación para base de datos en producción
 
 ## 🎥 Demo del proyecto
-[![Ver demo](https://img.youtube.com/vi/abc123/0.jpg)]
 (https://canva.link/gmw6w50lqksdywe)
