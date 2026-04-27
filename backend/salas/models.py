@@ -24,7 +24,7 @@ class Sala(models.Model):
         ("rechazada", "Rechazada"),
     ]
 
-    # DATOS BÁSICOS (usuario puede cargar solo esto)
+    #(usuario puede cargar solo esto)
     nombre = models.CharField(max_length=150)
     direccion = models.CharField(max_length=200)
 
@@ -58,12 +58,12 @@ class Sala(models.Model):
     # cada sala es creada por un ADMINISTRADOR
     creador = models.ForeignKey(
         User,
-        on_delete=models.SET_NULL, #si el usuario e elimina, no la sala 
+        on_delete=models.SET_NULL, 
         null=True,
         blank=True
     )
 
-    activa = models.BooleanField(default=True) #si el admin quiere desactivar temporalmente una sala aprobada
+    activa = models.BooleanField(default=True) 
     creada_en = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

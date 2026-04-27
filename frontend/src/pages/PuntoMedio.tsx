@@ -24,25 +24,25 @@ export default function PuntoMedio(){
     const [loading, setLoading] = useState(false)
     const [barrio, setBarrio] = useState<string | null>(null)
 
-    // ➕ agregar input
+    // agregar input
     function agregarInput() {
         setUbicaciones([...ubicaciones, ""])
     }
 
-    // ❌ eliminar input
+    // eliminar input
     function eliminarInput(index: number) {
         const nuevas = ubicaciones.filter((_, i) => i !== index)
         setUbicaciones(nuevas)
     }
 
-    // ✏️ manejar cambios
+    // manejar cambios
     function handleChange(index: number, value: string) {
         const nuevas = [...ubicaciones]
         nuevas[index] = value
         setUbicaciones(nuevas)
     }
 
-    // 🚀 llamar backend
+    // llamar backend
     async function calcularCentro() {
         const barriosFiltrados = ubicaciones
             .map(b => b.trim())
@@ -58,7 +58,6 @@ export default function PuntoMedio(){
             setCentro(data.centro)
             setBarrio(data.barrio)
 
-            // 👉 REDIRECCIÓN DIRECTA AL BUSCADOR
             if (data.barrio) {
             navigate(`/buscar-sala?barrio=${encodeURIComponent(data.barrio)}`)
             }
